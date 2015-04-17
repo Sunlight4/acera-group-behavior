@@ -76,20 +76,20 @@ class MainHandler(webapp2.RequestHandler):
                 self.response.write("Your choice is currently "+("Yes" if user_choice.decision else "No")+"<br>")
             self.response.write(("""Submit an opinion:
 <form action="/opinion" method="post" enctype="multipart/form-data"><input type="hidden" name="debate" value="%s">
-<input type="radio" name="decision%s" value="yes" selected>Yes<br>
-<input type="radio" name="decision%s value="no">No<br>
-<div><textarea rows="4" cols="50" name="comment%s">
+<input type="radio" name="decision" value="yes" selected>Yes<br>
+<input type="radio" name="decision value="no">No<br>
+<div><textarea rows="4" cols="50" name="comment">
 Why you chose what you chose(500 characters or less)
 </textarea><br></div>
-<input type="submit" value="Submit Opinion"></form><br>""") %(debate.title, debate.title, debate.title, debate.title))
+<input type="submit" value="Submit Opinion"></form><br>""") %(debate.title))
             if admin:
                 self.response.write(("""Change settings:<br>
 <form action="/settings" method="post" enctype="multipart/form-data">><input type="hidden" name="debate" value="%s">
-<input type="radio" name="level%s" value="1" selected>Level 1(no data)<br>
-<input type="radio" name="level%s" value="2">Level 2(how many users chose each answer)<br>
-<input type="radio" name="level%s" value="3">Level 3(each answer with comments)<br>
-<input type="radio" name="level%s" value="4">Level 4(chats)<br>
-<input type="submit" value="Change Settings"></form>""") %(debate.title, debate.title, debate.title, debate.title))
+<input type="radio" name="level" value="1" selected>Level 1(no data)<br>
+<input type="radio" name="level" value="2">Level 2(how many users chose each answer)<br>
+<input type="radio" name="level" value="3">Level 3(each answer with comments)<br>
+<input type="radio" name="level" value="4">Level 4(chats)<br>
+<input type="submit" value="Change Settings"></form>""") %(debate.title))
         if admin:
             self.response.write("""<form action="/add" enctype="multipart/form-data" method="post">
 <div><textarea rows="1" cols="50" name="name">
@@ -122,8 +122,8 @@ class RegisterHandler(webapp2.RequestHandler):
         o.user=user
         debate=Debate.query(Debate.title==self.request.get("debate")).get()
         o.debate=debate.key
-        o.decision=self.request.get("decision"+debate.title)=="yes"
-        o.comment=self.request.get("comment"+debate.title)
+        o.decision=self.request.get("decision")=="yes"
+        o.comment=self.request.get("comment")
         opinion=Opinion.query(Opinion.user==user, Opinion.debate==o.debate).get()
         if (opinion != None) and opinion.debate.get().title==self.request.get("debate"):
             self.response.write("""<script>
@@ -145,7 +145,7 @@ class AddHandler(webapp2.RequestHandler):
 class Settings(webapp2.RequestHandler):
     def post(self):
         d=Debate.query(Debate.title==self.request.get("debate")).get()
-        d.levels=int(self.request.get("level"+d.title))
+        d.levels=int(self.request.get("level"))
         d.put()
         self.redirect('/')
 class Opinions(webapp2.RequestHandler):
